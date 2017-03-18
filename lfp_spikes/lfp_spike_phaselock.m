@@ -1,5 +1,7 @@
 function [phaseLockAll] = lfp_spike_phaselock(lfpLocation,spikeLocation,frequencyRange,sampleRate)
-
+% USAGE
+% [phaseLockAll] = lfp_spike_phaselock(lfpLocation,spikeLocation,frequencyRange,sampleRate)
+%
 % INPUT
 % 
 %     lfpLocation - folder and filename for the local field potential data

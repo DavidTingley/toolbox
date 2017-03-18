@@ -1,7 +1,11 @@
 function [noiseCorrSuccess,noiseCorrFailure,...
           noiseCorrSuccessControl,noiseCorrFailureControl] ...
-        = noise_corr(trials_all_success,trials_all_failure,controlIter,...
+        = noiseCorr(trials_all_success,trials_all_failure,controlIter,...
           fileName) 
+% USAGE
+%  [noiseCorrSuccess,noiseCorrFailure,...
+%   noiseCorrSuccessControl,noiseCorrFailureControl] ...
+%   = noiseCorr(trials_all_success,trials_all_failure,controlIter, fileName)
 % 
 % INPUT
 %         trials_all_success - (N x 1) cell array where each element is a 
@@ -25,17 +29,18 @@ function [noiseCorrSuccess,noiseCorrFailure,...
 %         noiseCorr***Control - (controlIter x N x N) matrices of control noise
 %                               correlations where all trials are reorganized 
 %                               randomly on each iteration 
-%         
-%
+% 
+% this function calculates the noise correlations for cell pairs across a set of trials,
+% relative to time or space. 
+%        
+% David Tingley, 2015
+
 totalCellNumber = length(trials_all_success);
 disp(totalCellNumber)
 if totalCellNumber > 1
-
     if nargin < 3
         controlIter = 50;
     end
-
-
 
     for numCell = 1:totalCellNumber
         success_mean = mean(trials_all_success{numCell});
@@ -70,7 +75,6 @@ if totalCellNumber > 1
             repmat(failure_mean,size(trials_all_failure{numCell},1),1))',...
             numTrialsFailure*numBins,1);       
             end
-
     end
 
         for i =  1:totalCellNumber

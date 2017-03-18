@@ -1,7 +1,6 @@
 function [track_info,pos_info_val] = Info_Analysis(data,round_to)
-%  Written by David Tingley
-%  UCSD Cognitive Neuroscience
-%  1/15/12
+% USAGE
+%        [track_info,pos_info_val] = Info_Analysis(data,round_to)
 %
 % INPUTS
 %         data - matrix (M x N x D) where M is the number of cells to analyze,
@@ -15,6 +14,13 @@ function [track_info,pos_info_val] = Info_Analysis(data,round_to)
 %                      trials or behavior windows (N)
 %         pos_info_val - matrix (M x N x D) of all information values 
 %                        that are calculated  
+%
+% this function calculates the information carried in the firing rate of single
+% neurons per spatial/temporal bin
+%
+%  Written by David Tingley
+%  UCSD Cognitive Neuroscience
+%  1/15/12
           
 M = size(data,1);
 N = size(data,2); 
