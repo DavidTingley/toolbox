@@ -32,9 +32,9 @@ function [cell_field, index, center_m] = ...
 no_cells=size(rates,1);
 THRESHOLD = 5; % Minimum firing rate in hertz
 
-   no_maxs = zeros(1:no_cells,1);
-   max_loc = zeros(1:no_cells,1);
-   index = zeros(1:no_cells,1);
+   no_maxs = zeros(no_cells,1);
+   max_loc = zeros(no_cells,1);
+   index = zeros(no_cells,1);
    
 for i = 1:no_cells
        field_count = 0;

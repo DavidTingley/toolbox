@@ -1,6 +1,6 @@
-function [track_info,pos_info_val] = Info_Analysis(data,round_to)
+function [track_info,pos_info_val] = Info_Analysis(data,round_to,smoothing)
 % USAGE
-%        [track_info,pos_info_val] = Info_Analysis(data,round_to)
+%        [track_info,pos_info_val] = Info_Analysis(data,round_to,smoothing)
 %
 % INPUTS
 %         data - matrix (M x N x D) where M is the number of cells to analyze,
@@ -21,6 +21,11 @@ function [track_info,pos_info_val] = Info_Analysis(data,round_to)
 %  Written by David Tingley
 %  UCSD Cognitive Neuroscience
 %  1/15/12
+
+%% TODO
+% - convert to varargin with input parser
+% - add 'exclude' input to remove 0's from info calculation
+% - 
           
 M = size(data,1);
 N = size(data,2); 
@@ -39,7 +44,13 @@ pos_info_val = zeros(M,N,D);
 a = N*D;
 
 %% Rounding 
-
+if smoothing ~= 0
+    for i = 1 : M
+        for k = 1:N
+            data(i,k,:) = smooth(squeeze(data(i,k,:)),smoothing).*smoothing;
+        end
+    end
+end
 data = round(data./round_to)*round_to;
 
 %% Info Analysis
