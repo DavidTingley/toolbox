@@ -1,13 +1,12 @@
 function [dev devControl] =... %stats devControl statsControl] = ...
     cell_assembly(spikeTimes,winRange,pairsToRun)
-% USAGE
-%
+
 % INPUT
 % 
 % 
 %     spikeTimes - (M x N x D) matrix of spike times. M is the cell number, 
 %                  N is the trial number, and D is length of a trial in
-%                  milliseconds (assumes spikes are 1's and no-spikes are 0's)
+%                  milliseconds
 %     winRange - vector that represents the range of temporal smoothing 
 %                 windows over which to run the assembly analysis 
 %                 (default is 0:500 ms)
@@ -20,8 +19,7 @@ function [dev devControl] =... %stats devControl statsControl] = ...
 %      stats - cell array of statistics returns by glmfit.m at each 
 %                temporally smoothed window size
 %      *Control - same variables as above with trial order randomly shuffled
-%
-% David Tingley, 2015
+
 
 
 
@@ -79,7 +77,7 @@ end
 %               stats devControl statsControl
 function [dev devControl] = ...
     parGLMRun(win,spikeTimes,pairsToRun,numTrials)
-warning off;
+% warning off;
 pred_last = 0;
 for pair = 1:size(pairsToRun(:,1),1)
 %     tic
@@ -111,17 +109,25 @@ end
         randOrder = randperm(numTrials); 
         for trial = 1:numTrials
 
-            actual = squeeze(spikeTimes(act,trial,:));
-            predictor = smoothedTrains(trial,:);
-            predictorControl = smoothedTrains(randOrder(trial),:);
+            actual = double(squeeze(spikeTimes(act,trial,:))); % GLM's don't like singles...?
+            predictor = double(smoothedTrains(trial,:));
+            predictorControl = double(smoothedTrains(randOrder(trial),:));
             
 %                                stats(pair,trial)
             [results dev(pair,trial) ] = ...
             glmfit([predictor;]',actual,'normal');
 %             yhat(pair,trial,:) = glmval(results,[predictor; 1:size(spikeTimes,3)]','identity');
+            if numTrials == 1 % we need another way to shuffle if only one trial is given
+                for iter = 1:100
+                    predictorControlShifted = circshift(predictorControl,round(rand*length(predictorControl)));
+                    [resultsControl(:,iter) devControl(pair,trial,iter)] = ...
+                    glmfit([predictorControlShifted;]',actual,'normal');
+                end
+            else
+                [resultsControl devControl(pair,trial)] = ...
+                    glmfit([predictorControl;]',actual,'normal');
+            end
             
-            [resultsControl devControl(pair,trial)] = ...
-            glmfit([predictorControl;]',actual,'normal');
 %             yhatControl(pair,trial,:) = glmval(results,[predictorControl; 1:size(spikeTimes,3)]','identity');            
         end   
      pred_last = pred;
