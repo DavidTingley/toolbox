@@ -77,7 +77,7 @@ end
 %               stats devControl statsControl
 function [dev devControl] = ...
     parGLMRun(win,spikeTimes,extraPredictors,pairsToRun,numTrials)
-% warning off;
+warning off;
 pred_last = 0;
 for pair = 1:size(pairsToRun(:,1),1)
 %     tic
