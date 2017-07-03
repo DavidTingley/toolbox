@@ -118,7 +118,7 @@ end
             glmfit([predictor;extraPredictors]',actual,'normal');
 %             yhat(pair,trial,:) = glmval(results,[predictor; 1:size(spikeTimes,3)]','identity');
             if numTrials == 1 % we need another way to shuffle if only one trial is given
-                for iter = 1:20
+                for iter = 1:100
                     predictorControlShifted = circshift(predictorControl,round(rand*length(predictorControl)));
                     [resultsControl(:,iter) devControl(pair,trial,iter)] = ...
                     glmfit([predictorControlShifted;extraPredictors]',actual,'normal');

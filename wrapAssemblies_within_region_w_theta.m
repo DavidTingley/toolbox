@@ -66,7 +66,7 @@
             % call GLM here
         end
         for c = 1:length(unique(behavior.events.trialConditions))
-            extraPredictors = [sin(phasetralsins{c});cos(phasetrains{c});phasetrains{c};coords{c};velocities{c}];
+            extraPredictors = [sin(phasetrains{c});cos(phasetrains{c});phasetrains{c};coords{c};velocities{c}];
             [dev{c} devControl{c}] =cell_assembly_w_theta((spktrains{c}),0:200,extraPredictors,pairs);
             save('assembliesWithinRegionData_w_theta_sin_cos_coord_vel.mat','spktrains','phasetrains','coords','velo*','pairs','dev*');
         end
