@@ -1,4 +1,4 @@
-try
+% try
     % load spikes and stuff
     xml = LoadParameters;
      load([xml.FileName '.behavior.mat'])
@@ -67,7 +67,7 @@ try
         end
         for c = 1:length(unique(behavior.events.trialConditions))
             extraPredictors = [sin(phasetrains{c});cos(phasetrains{c});phasetrains{c};coords{c};velocities{c}];
-            [dev{c} devControl{c}] =cell_assembly_w_theta((spktrains{c}),extraPredictors,0:200,pairs);
+            [dev{c} devControl{c}] =cell_assembly_w_theta((spktrains{c}),0:200,extraPredictors,pairs);
             save('assembliesCrossRegionData_w_theta_sin_cos_coord_vel.mat','spktrains','phasetrains','coords','velo*','pairs','dev*');
         end
 %     elseif exist('assembliesCrossRegionData.mat') && ~exist('assemblies.mat')
@@ -131,5 +131,5 @@ try
     
     % save results
 %     save('assembliesCrossRegion.mat','dev*','pairs')
-catch
-end
+% catch
+% end
