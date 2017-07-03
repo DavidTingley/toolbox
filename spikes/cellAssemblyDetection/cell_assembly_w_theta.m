@@ -1,5 +1,5 @@
 function [dev devControl] =... %stats devControl statsControl] = ...
-    cell_assembly(spikeTimes,winRange,pairsToRun)
+    cell_assembly_w_theta(spikeTimes,winRange,extraPredictors,pairsToRun)
 
 % INPUT
 % 
@@ -67,7 +67,7 @@ for win = winRange
 %     tic
     %              stats{c}   devControl(c,:,:) statsControl{c}
        [dev(win+1,:,:) devControl(win+1,:,:)] = ...
-           parGLMRun(win,spikeTimes,pairsToRun,numTrials);
+           parGLMRun(win,spikeTimes,extraPredictors,pairsToRun,numTrials);
 %        c = c+1
        win
 %        toc
@@ -76,7 +76,7 @@ end
 
 %               stats devControl statsControl
 function [dev devControl] = ...
-    parGLMRun(win,spikeTimes,pairsToRun,numTrials)
+    parGLMRun(win,spikeTimes,extraPredictors,pairsToRun,numTrials)
 % warning off;
 pred_last = 0;
 for pair = 1:size(pairsToRun(:,1),1)
@@ -115,17 +115,17 @@ end
             
 %                                stats(pair,trial)
             [results dev(pair,trial) ] = ...
-            glmfit([predictor;]',actual,'normal');
+            glmfit([predictor;extraPredictors]',actual,'normal');
 %             yhat(pair,trial,:) = glmval(results,[predictor; 1:size(spikeTimes,3)]','identity');
             if numTrials == 1 % we need another way to shuffle if only one trial is given
                 for iter = 1:10
                     predictorControlShifted = circshift(predictorControl,round(rand*length(predictorControl)));
                     [resultsControl(:,iter) devControl(pair,trial,iter)] = ...
-                    glmfit([predictorControlShifted;]',actual,'normal');
+                    glmfit([predictorControlShifted;extraPredictors]',actual,'normal');
                 end
             else
                 [resultsControl devControl(pair,trial)] = ...
-                    glmfit([predictorControl;]',actual,'normal');
+                    glmfit([predictorControl;extraPredictors]',actual,'normal');
             end
             
 %             yhatControl(pair,trial,:) = glmval(results,[predictorControl; 1:size(spikeTimes,3)]','identity');            
