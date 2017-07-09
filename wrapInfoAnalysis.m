@@ -18,7 +18,7 @@ end
     
 
    % set up phase coding data
-[rateMap countMap occuMap phaseMap] = bz_firingMap1D(spikes.times,behavior,lfp,smoothing);
+[rateMap countMap occuMap phaseMap] = bz_firingMap1D(spikes.times,behavior,lfp,4);
 [binnedPhaseMap] = bz_phaseMap2Bins(phaseMap,rateMap,behavior);
     
 for smoothing = 1:round(bins/2)
