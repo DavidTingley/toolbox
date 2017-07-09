@@ -9,6 +9,7 @@ function [track_info,pos_info_val] = Info_Analysis(data,round_to,smoothing)
 %         round_to - integer value that data is discritized to. A value of
 %                    2 means all data will be rounded to nearest 2 (i.e.
 %                    2,4,8...)
+%         smoothing - 0 no smoothing, else smooth with N bins
 % OUTPUTS
 %         track_info - matrix (M x D-2) of information scores across all 
 %                      trials or behavior windows (N)
