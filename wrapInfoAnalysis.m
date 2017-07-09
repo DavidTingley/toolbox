@@ -7,7 +7,7 @@ load([xml.FileName '.behavior.mat'])
 load([xml.FileName '.sessionInfo.mat'])
 load([xml.FileName '.spikes.cellinfo.mat'])
 lfp = bz_GetLFP(sessionInfo.thetaChans(2));
-bins = max(behavior.events.trials{1}.mapping);
+nBins = max(behavior.events.trials{1}.mapping);
 
 olypherInfo.region = spikes.region;
 olypherInfo.sessionName = spikes.sessionName;
@@ -21,7 +21,7 @@ end
 [rateMap countMap occuMap phaseMap] = bz_firingMap1D(spikes.times,behavior,lfp,4);
 [binnedPhaseMap] = bz_phaseMap2Bins(phaseMap,rateMap,behavior);
     
-for smoothing = 1:round(bins/2)
+for smoothing = 1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
     
     for cond = 1:length(unique(behavior.events.trialConditions))
