@@ -31,8 +31,8 @@ for smoothing = 1:round(bins/2)
               binnedPhaseMap_smooth{cond}(cell,trial,:) = circ_smoothTS(squeeze(binnedPhaseMap{cond}(cell,trial,:)),smoothing,'method','mean'); 
               rateMap_smooth{cond}(cell,trial,:) = smooth(countMap{cond}(cell,trial,:),smoothing);
            end
-           rateMap_disc{cond}(cell,:,:) = discretize(rateMap_smooth{cond}(cell,:,:),50);  % discretize both rate/phase to same # of bins...
-           phaseMap_disc{cond}(cell,:,:) = discretize(binnedPhaseMap_smooth{cond}(cell,:,:),50);
+           rateMap_disc{cond}(cell,:,:) = discretize(rateMap_smooth{cond}(cell,:,:),0:max(rateMap_smooth{cond}(cell,:,:))./63:max(rateMap_smooth{cond}(cell,:,:)));  % discretize both rate/phase to same # of bins...
+           phaseMap_disc{cond}(cell,:,:) = discretize(binnedPhaseMap_smooth{cond}(cell,:,:),-pi:.1:pi);
            
         end
         phaseMap_disc{cond}(isnan(phaseMap_disc{cond}))=0;    
