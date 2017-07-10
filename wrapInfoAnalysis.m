@@ -51,8 +51,8 @@ for smoothing = 1:round(nBins/2)
             struct.phaseInfoScores = squeeze(sum(pos_info_val_phase(cell,:,:)))';
             struct.phaseTotalInfo = sum(squeeze(sum(pos_info_val_rate(cell,:,:))));
             
-            struct.rateInfoScores = squeeze(sum(pos_info_val(cell,:,:)))';
-            struct.rateTotalInfo = sum(squeeze(sum(pos_info_val(cell,:,:))));
+            struct.rateInfoScores = squeeze(sum(pos_info_val_rate(cell,:,:)))';
+            struct.rateTotalInfo = sum(squeeze(sum(pos_info_val_rate(cell,:,:))));
             
             
             struct.smoothing = smoothing;
