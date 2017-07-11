@@ -24,7 +24,7 @@ end
 for smoothing = 1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
     
-    for cond = 2%:length(unique(behavior.events.trialConditions))
+    for cond = 1:length(unique(behavior.events.trialConditions))
 %         figure(cond)
         % smooth data..
         for cell = 1:length(spikes.times)
@@ -61,26 +61,26 @@ for smoothing = 1:round(nBins/2)
             struct.smoothing = smoothing;
             struct.condition = cond;
             olypherInfo.results{cell} = [olypherInfo.results{cell}; struct2table(struct)];
-            if cell == 7
-                subplot(2,2,1);
-                imagesc(squeeze(rateMap_disc{cond}(cell,:,:)));
-                subplot(2,2,2);
-                imagesc(squeeze(phaseMap_disc{cond}(cell,:,:)));
-                subplot(2,2,4)
-                scatter(phaseMap{cond}{cell}(:,1),phaseMap{cond}{cell}(:,end)+2*pi,'.k');
-                subplot(2,2,3);
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
-                hold on
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
-                hold off
-                pause(.1)
-            end
+%             if cell == 80
+%                 subplot(2,2,1);
+%                 imagesc(squeeze(rateMap_disc{cond}(cell,:,:)));
+%                 subplot(2,2,2);
+%                 imagesc(squeeze(phaseMap_disc{cond}(cell,:,:)));
+%                 subplot(2,2,4)
+%                 scatter(phaseMap{cond}{cell}(:,1),phaseMap{cond}{cell}(:,end)+2*pi,'.k');
+%                 subplot(2,2,3);
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
+%                 hold on
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
+%                 hold off
+%                 pause(.1)
+%             end
             
         end
         disp(['done with condition: ' num2str(cond) ' of ' num2str(length(unique(behavior.events.trialConditions)))]);
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-%     save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
+    save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
 end
 
