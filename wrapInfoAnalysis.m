@@ -23,7 +23,7 @@ end
     
 for smoothing = 1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
-    for cond = 5%1:length(unique(behavior.events.trialConditions))
+    for cond = 1:length(unique(behavior.events.trialConditions))
 %         figure(cond)
         % smooth data..
         for cell = 1:length(spikes.times)
@@ -31,7 +31,7 @@ for smoothing = 1:round(nBins/2)
               binnedPhaseMap_smooth{cond}(cell,trial,:) = circ_smoothTS(squeeze(binnedPhaseMap{cond}(cell,trial,:)),smoothing,'method','mean'); 
               binnedPhaseMap_smooth{cond}(cell,trial,binnedPhaseMap_smooth{cond}(cell,trial,:)==0)=nan;
               
-              rateMap_smooth{cond}(cell,trial,:) = smooth(squeeze(countMap{cond}(cell,trial,:)),smoothing);
+              rateMap_smooth{cond}(cell,trial,:) = smooth(squeeze(countMap{cond}(cell,trial,:))',smoothing);
            end
            range = 0:max(max(squeeze(rateMap_smooth{cond}(cell,:,:))))./63:max(max(squeeze(rateMap_smooth{cond}(cell,:,:))));
            if isempty(range)
@@ -42,7 +42,7 @@ for smoothing = 1:round(nBins/2)
            f = find(binnedPhaseMap_smooth{cond}(cell,:)==0);
            binnedPhaseMap_smooth{cond}(cell,f)=nan;
            rateMap_disc{cond}(cell,:,:) = discretize(rateMap_smooth{cond}(cell,:,:),range);  % discretize both rate/phase to same # of bins...
-           phaseMap_disc{cond}(cell,:,:) = discretize(binnedPhaseMap_smooth{cond}(cell,:,:),-pi:.1:pi);
+           phaseMap_disc{cond}(cell,:,:) = discretize(binnedPhaseMap_smooth{cond}(cell,:,:),-pi:.1:pi);% ,-1:.032:1);
            
         end
 %         phaseMap_disc{cond}(isnan(phaseMap_disc{cond}))=0;    
@@ -56,34 +56,35 @@ for smoothing = 1:round(nBins/2)
         for cell = 1:length(spikes.times)
             struct.phaseInfoScores = squeeze(sum(pos_info_val_phase(cell,:,:)))';
             struct.phaseTotalInfo = sum(squeeze(sum(pos_info_val_phase(cell,:,:))));
+            struct.phasePeakInfo = max(squeeze(sum(pos_info_val_phase(cell,:,:))));
             
             struct.rateInfoScores = squeeze(sum(pos_info_val_rate(cell,:,:)))';
             struct.rateTotalInfo = sum(squeeze(sum(pos_info_val_rate(cell,:,:))));
-            
+            struct.ratePeakInfo = max(squeeze(sum(pos_info_val_rate(cell,:,:))));
             
             struct.smoothing = smoothing;
             struct.condition = cond;
             olypherInfo.results{cell} = [olypherInfo.results{cell}; struct2table(struct)];
-            if cell == 80
-                subplot(2,2,1);
-                imagesc(squeeze(rateMap_disc{cond}(cell,:,:)));
-                subplot(2,2,2);
-                imagesc(squeeze(phaseMap_disc{cond}(cell,:,:)));
-                subplot(2,2,4)
-                scatter(phaseMap{cond}{cell}(:,1),phaseMap{cond}{cell}(:,end)+2*pi,'.k');
-                subplot(2,2,3);
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
-                hold on
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
-                hold off
-                pause(.1)
-            end
+%             if cell == 80 & cond == 5
+%                 subplot(2,2,1);
+%                 imagesc(squeeze(rateMap_disc{cond}(cell,:,:)));
+%                 subplot(2,2,2);
+%                 imagesc(squeeze(phaseMap_disc{cond}(cell,:,:)));
+%                 subplot(2,2,4)
+%                 scatter(phaseMap{cond}{cell}(:,1),phaseMap{cond}{cell}(:,end)+2*pi,'.k');
+%                 subplot(2,2,3);
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows),'r')
+%                 hold on
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows),'g')
+%                 hold off
+%                 pause(.1)
+%             end
             
         end
         disp(['done with condition: ' num2str(cond) ' of ' num2str(length(unique(behavior.events.trialConditions)))]);
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-%     save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
+    save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
 end
 
