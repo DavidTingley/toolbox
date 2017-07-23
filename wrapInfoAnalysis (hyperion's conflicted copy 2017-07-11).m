@@ -17,43 +17,42 @@ for cell=1:length(spikes.times)
 end
     
 
-%    % set up phase coding data
+   % set up phase coding data
 [rateMap countMap occuMap phaseMap] = bz_firingMap1D(spikes.times,behavior,lfp,4);
 [binnedPhaseMap] = bz_phaseMap2Bins(phaseMap,rateMap,behavior);
-    for discBins = [2 4 6 10 15 25 40 60]
+    
 for smoothing = 1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
-    for cond = 1:length(unique(behavior.events.trialConditions))
+    for cond = 7%1:length(unique(behavior.events.trialConditions))
 %         figure(cond)
         % smooth data..
         for cell = 1:length(spikes.times)
            for trial = 1:size(binnedPhaseMap{cond},2)
-              binnedPhaseMap_smooth{cond}(cell,trial,:) = circ_smoothTS(squeeze(binnedPhaseMap{cond}(cell,trial,:)),smoothing,'method','mean','exclude',0); 
+              binnedPhaseMap_smooth{cond}(cell,trial,:) = circ_smoothTS(squeeze(binnedPhaseMap{cond}(cell,trial,:)),smoothing,'method','mean'); 
               binnedPhaseMap_smooth{cond}(cell,trial,binnedPhaseMap_smooth{cond}(cell,trial,:)==0)=nan;
               rateMap_smooth{cond}(cell,trial,:) = smooth(squeeze(countMap{cond}(cell,trial,:))',smoothing);
-              for iter = 1:10
-                  binnedPhaseMap_smooth_shuffle{cond}(cell,trial,iter,:) = ...
-                      circ_smoothTS(circshift(squeeze(binnedPhaseMap{cond}(cell,trial,:)),round(nBins*rand)),smoothing,'method','mean'); 
-                  
-                  binnedPhaseMap_smooth_shuffle{cond}(cell,trial,iter,...
-                      binnedPhaseMap_smooth_shuffle{cond}(cell,trial,iter,:)==0)=nan;
-                  
-                  rateMap_smooth_shuffle{cond}(cell,trial,iter,:) = ...
-                      smooth(circshift(squeeze(countMap{cond}(cell,trial,:)),round(nBins*rand)),smoothing);
-              end
+%               for iter = 1:10
+%                   binnedPhaseMap_smooth_shuffle{cond}(cell,trial,iter,:) = ...
+%                       circ_smoothTS(circshift(squeeze(binnedPhaseMap{cond}(cell,trial,:)),round(nBins*rand)),smoothing,'method','mean'); 
+%                   
+%                   binnedPhaseMap_smooth_shuffle{cond}(cell,trial,iter,...
+%                       binnedPhaseMap_smooth_shuffle{cond}(cell,trial,iter,:)==0)=nan;
+%                   
+%                   rateMap_smooth_shuffle{cond}(cell,trial,iter,:) = ...
+%                       smooth(circshift(squeeze(countMap{cond}(cell,trial,:)),round(nBins*rand)),smoothing);
+%               end
            end
-           range = 0:max(max(squeeze(rateMap_smooth{cond}(cell,:,:))))./discBins:max(max(squeeze(rateMap_smooth{cond}(cell,:,:))));
+           range = 0:max(max(squeeze(rateMap_smooth{cond}(cell,:,:))))./63:max(max(squeeze(rateMap_smooth{cond}(cell,:,:))));
            if isempty(range)
                range = [0 1];
            end
            % discretize actual data
-%            f = find(rateMap_smooth{cond}(cell,:)==0);
-%            rateMap_smooth{cond}(cell,f)=nan;
-%            f = find(binnedPhaseMap_smooth{cond}(cell,:)==0);
-%            binnedPhaseMap_smooth{cond}(cell,f)=nan;
+           f = find(rateMap_smooth{cond}(cell,:)==0);
+           rateMap_smooth{cond}(cell,f)=nan;
+           f = find(binnedPhaseMap_smooth{cond}(cell,:)==0);
+           binnedPhaseMap_smooth{cond}(cell,f)=nan;
            rateMap_disc{cond}(cell,:,:) = discretize(rateMap_smooth{cond}(cell,:,:),range);  % discretize both rate/phase to same # of bins...
-           phaseMap_disc{cond}(cell,:,:) = discretize(binnedPhaseMap_smooth{cond}(cell,:,:),-pi:(2*pi)./discBins:pi);% ,-1:.032:1);
-           
+           phaseMap_disc{cond}(cell,:,:) = discretize(binnedPhaseMap_smooth{cond}(cell,:,:),-pi:.1:pi);% ,-1:.032:1);
            % discretize shuffled data
 %            f = find(rateMap_smooth_shuffle{cond}(cell,:)==0);
 %            rateMap_smooth_shuffle{cond}(cell,f)=nan;
@@ -64,7 +63,7 @@ for smoothing = 1:round(nBins/2)
 %            phaseMap_disc_shuffle{cond}(cell,:,iter,:) = discretize(binnedPhaseMap_smooth_shuffle{cond}(cell,:,iter,:),-pi:.1:pi);% ,-1:.032:1);
 %            end
         end
-        phaseMap_disc{cond}(isnan(phaseMap_disc{cond}))=0;    
+%         phaseMap_disc{cond}(isnan(phaseMap_disc{cond}))=0;    
         
         % run info analysis
         [track_info_rate,pos_info_val_rate] = Info_Analysis(rateMap_disc{cond},1,0);  
@@ -77,7 +76,34 @@ for smoothing = 1:round(nBins/2)
 %         end
         
         % compile data
-        for cell = 1:length(spikes.times)
+        for cell = 44%1:length(spikes.times)
+            r = squeeze(rateMap_disc{cond}(cell,:,:));
+            p = squeeze(phaseMap_disc{cond}(cell,:,:));
+            z = repmat([1:nBins]',size(r,1),1);
+            r = reshape(r',size(r,1)*size(r,2),1);
+            p = reshape(p',size(p,1)*size(p,2),1);
+            
+            rr = randperm(length(r));
+            pct = round(prctile(1:length(r),85));
+            r_train = r(rr(1:pct));
+            r_test = r(rr(pct+1:end));
+            p_train = p(rr(1:pct));
+            p_test = p(rr(pct+1:end));
+            z_train = z(rr(1:pct));
+            z_test = z(rr(pct+1:end));
+            
+            [b dev stats] = glmfit([r_train],z_train,'normal');
+            yfit = glmval(b,r_test,'identity');
+            struct.rateMSE = nanmean((z_test-yfit).^2);
+            
+            [b dev stats] = glmfit([p_train cos(p_train) sin(p_train)],z_train,'normal');
+            yfit = glmval(b,[p_test cos(p_test) sin(p_test)],'identity');
+            struct.phaseMSE = nanmean((z_test-yfit).^2);
+            
+            [b dev stats] = glmfit([r_train p_train cos(p_train) sin(p_train)],z_train,'normal');
+            yfit = glmval(b,[r_test p_test cos(p_test) sin(p_test)],'identity');
+            struct.bothMSE  = nanmean((z_test-yfit).^2);
+            
             struct.phaseInfoScores = squeeze(sum(pos_info_val_phase(cell,:,:)))';
             struct.phaseTotalInfo = sum(squeeze(sum(pos_info_val_phase(cell,:,:))));
             struct.phasePeakInfo = max(squeeze(sum(pos_info_val_phase(cell,:,:))));
@@ -93,36 +119,26 @@ for smoothing = 1:round(nBins/2)
 %                struct.phasePeakInfo_shuffle(iter) = max(squeeze(sum(pos_info_val_phase_shuffle{iter}(cell,:,:))));
 %             end
             struct.smoothing = smoothing;
-            struct.discBins = discBins;
             struct.condition = cond;
             olypherInfo.results{cell} = [olypherInfo.results{cell}; struct2table(struct)];
-            if cell == 46
+            if cell == 44
                 rows = find(olypherInfo.results{cell}.condition==cond);
-                cols = find(olypherInfo.results{cell}.discBins == discBins);
-                rows = intersect(rows,cols);
-                figure(discBins)
-                subplot(4,2,1);
+                subplot(2,2,1);
 %                 imagesc(squeeze(rateMap_disc{cond}(cell,:,:)));
                 imagesc(squeeze(phaseMap_disc{cond}(cell,:,:)));
-                subplot(4,2,2);
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
+                subplot(2,2,2);
+                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateMSE(rows),'.r')
                 hold on
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
-                hold off
-                subplot(4,2,4)
+                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseMSE(rows),'.g')
+                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.bothMSE(rows),'.k')
+                subplot(2,2,4)
                 scatter(phaseMap{cond}{cell}(:,1),phaseMap{cond}{cell}(:,end)+2*pi,'.k');
-                subplot(4,2,3);
+                subplot(2,2,3);
                 rows = find(olypherInfo.results{cell}.condition==cond);
                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows),'r')
                 hold on
                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows),'g')
                 hold off
-                subplot(4,2,5)
-                imagesc(olypherInfo.results{cell}.phaseInfoScores)
-                subplot(4,2,6)
-                imagesc(olypherInfo.results{cell}.rateInfoScores)
-                
                 title([cell cond])
                 pause(.1)
             end
@@ -133,5 +149,4 @@ for smoothing = 1:round(nBins/2)
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
 %     save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
 end
-    end
 

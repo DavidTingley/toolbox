@@ -36,7 +36,7 @@ for cell = 1:nCells
         for bin = 1:nBins
             ff = find(phaseMap{cond}{cell}(f,1)==bin);
              if ~isempty(ff)
-                binnedPhaseMap{cond}(cell,trial,bin)=circ_mean(phaseMap{cond}{cell}(f(ff),1));
+                binnedPhaseMap{cond}(cell,trial,bin)=circ_mean(phaseMap{cond}{cell}(f(ff),end));
              end
         end
         end
