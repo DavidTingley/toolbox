@@ -83,7 +83,7 @@ for pair = 1:size(pairsToRun(:,1),1)
 %     tic
 pred = pairsToRun(pair,1);
 act = pairsToRun(pair,2);
-  
+if sum(spikeTimes(act,:,:))+sum(spikeTimes(pred,:,:)) > 100
    %% create temporally smoothed predictor spike trains here
 if pred_last ~= pred
     for temp = 1:size(spikeTimes,3)
@@ -118,7 +118,7 @@ end
             glmfit([predictor;extraPredictors]',actual,'normal');
 %             yhat(pair,trial,:) = glmval(results,[predictor; 1:size(spikeTimes,3)]','identity');
             if numTrials == 1 % we need another way to shuffle if only one trial is given
-                for iter = 1:10
+                for iter = 1:5
                     predictorControlShifted = circshift(predictorControl,...
                         round(rand*length(predictorControl)),2);
                     [resultsControl(:,iter) devControl(pair,trial,iter)] = ...
@@ -134,5 +134,5 @@ end
      pred_last = pred;
 %      toc
  end
-
+end
 end

@@ -1,4 +1,4 @@
-% try
+cd% try
     % load spikes and stuff
     xml = LoadParameters;
      load([xml.FileName '.behavior.mat'])
@@ -31,6 +31,8 @@
         for c = 1:length(unique(behavior.events.trialConditions))
             spktrains{c} = [];
             phasetrains{c} =[];
+            phasetrains_sin{c} = [];
+            phasetrains_cos{c} =[];
             coords{c} = [];
             velocities{c} = [];
         end
@@ -53,8 +55,15 @@
               [a start] =min(abs(lfp.timestamps-behavior.events.trialIntervals(c,1)));
               [a stop] =min(abs(lfp.timestamps-behavior.events.trialIntervals(c,2)));
               p = makeLength(phases(start:stop),length(train));
+              ps = makeLength(sin(phases(start:stop)),length(train));
+              pc = makeLength(cos(phases(start:stop)),length(train));
+              
               phasetrains{behavior.events.trialConditions(c)} = ...
                   [phasetrains{behavior.events.trialConditions(c)},p];
+              phasetrains_sin{behavior.events.trialConditions(c)} = ...
+                  [phasetrains_sin{behavior.events.trialConditions(c)},ps];
+              phasetrains_cos{behavior.events.trialConditions(c)} = ...
+                  [phasetrains_cos{behavior.events.trialConditions(c)},pc];
               
               cc = makeLength(behavior.events.trials{c}.mapping,length(train));
               coords{behavior.events.trialConditions(c)} = ...
@@ -67,9 +76,11 @@
             % call GLM here
         end
         for c = 1:length(unique(behavior.events.trialConditions))
-            extraPredictors = [sin(phasetrains{c});cos(phasetrains{c});phasetrains{c};coords{c};velocities{c}];
+            extraPredictors = [phasetrains_sin{c};phasetrains_cos{c};phasetrains{c};coords{c};velocities{c}];
+%             for p=1:length(pairs)
             [dev{c} devControl{c}] =cell_assembly_w_theta((spktrains{c}),0:200,extraPredictors,pairs);
             save('assembliesCrossRegionData_w_theta_sin_cos_coord_vel.mat','spktrains','phasetrains','coords','velo*','pairs','dev*');
+%             end
         end
     elseif exist('assembliesCrossRegionData_w_theta_sin_cos_coord_vel.mat') %&& ~exist('assemblies.mat')
         disp('adding to pre-existing file')
