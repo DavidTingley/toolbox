@@ -132,7 +132,7 @@ for smoothing = 1:round(nBins/2)
         end
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-    save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
+    save([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'],'olypherInfo')
 end
     end
 
