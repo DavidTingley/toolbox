@@ -19,7 +19,7 @@ end
 %    % set up phase coding data
 % [firingMaps.rateMaps firingMaps.countMaps occuMap firingMaps.phaseMaps] = bz_firingMap1D(spikes.times,behavior,lfp,4);
 [binnedfiringMaps.phaseMaps] = bz_phaseMap2Bins(firingMaps.phaseMaps,firingMaps.rateMaps,behavior);
-    for discBins = 40%[2 4 6 10 15 25 40 60]
+    for discBins = [2 4 10 15 25 40 60]
 for smoothing = 1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
     for cond = 1:length(unique(behavior.events.trialConditions))
