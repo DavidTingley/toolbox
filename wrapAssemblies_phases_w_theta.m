@@ -1,4 +1,4 @@
-cd% try
+% try
     % load spikes and stuff
     xml = LoadParameters;
      load([xml.FileName '.behavior.mat'])
@@ -35,6 +35,7 @@ cd% try
             phasetrains_cos{c} =[];
             coords{c} = [];
             velocities{c} = [];
+            spk_phase_trains_all{c} = [];
         end
         
         for c = 1:size(behavior.events.trialIntervals,1)
@@ -42,6 +43,7 @@ cd% try
                   behavior.events.trialIntervals(c,1)));
               
               train = single(zeros(length(spikes.times),trialLength));
+              spk_phase_trains = single(zeros(length(spikes.times),trialLength));
 
               for s = 1:length(spikes.times)
                     f = find(spikes.times{s}>behavior.events.trialIntervals(c,1));
@@ -49,6 +51,7 @@ cd% try
                     fff = intersect(f,ff);
                     times = ceil(1000*(spikes.times{s}(fff)-behavior.events.trialIntervals(c,1)));
                     train(s,times) = 1;
+                    spk_phase_trains(s,times) = phases(round(spikes.times{s}(fff)*1250));
               end
               spktrains{behavior.events.trialConditions(c)} = ...
                   [spktrains{behavior.events.trialConditions(c)},train];
@@ -65,6 +68,8 @@ cd% try
               phasetrains_cos{behavior.events.trialConditions(c)} = ...
                   [phasetrains_cos{behavior.events.trialConditions(c)},pc];
               
+              spk_phase_trains_all{behavior.events.trialConditions(c)} = ...
+                  [spk_phase_trains_all{behavior.events.trialConditions(c)},spk_phase_trains];
               cc = makeLength(behavior.events.trials{c}.mapping,length(train));
               coords{behavior.events.trialConditions(c)} = ...
                   [coords{behavior.events.trialConditions(c)},cc];

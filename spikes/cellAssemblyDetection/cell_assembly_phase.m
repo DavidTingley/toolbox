@@ -1,5 +1,5 @@
 function [dev devControl] =... %stats devControl statsControl] = ...
-    cell_assembly(spikeTimes,winRange,pairsToRun)
+    cell_assembly_phase(spikeTimes,spikeTimes_pred,winRange,pairsToRun)
 
 % INPUT
 % 
@@ -55,6 +55,9 @@ if length(size(spikeTimes))==2
    numTrials = 1;
    spikes(:,1,:) = spikeTimes; 
    spikeTimes = spikes;
+   spikes(:,1,:) = spikeTimes_pred; 
+   spikeTimes_pred = spikes;
+   
 end
 % EDIT THIS to take into acount matrices with a single trial (M x D) rather
 % than (M x N x D)
@@ -67,7 +70,7 @@ for win = winRange
 %     tic
     %              stats{c}   devControl(c,:,:) statsControl{c}
        [dev(win+1,:,:) devControl(win+1,:,:)] = ...
-           parGLMRun(win,spikeTimes,pairsToRun,numTrials);
+           parGLMRun(win,spikeTimes,spikeTimes_pred,pairsToRun,numTrials);
 %        c = c+1
        win
 %        toc
@@ -76,7 +79,7 @@ end
 
 %               stats devControl statsControl
 function [dev devControl] = ...
-    parGLMRun(win,spikeTimes,pairsToRun,numTrials)
+    parGLMRun(win,spikeTimes,spikeTimes_pred,pairsToRun,numTrials)
 % warning off;
 pred_last = 0;
 for pair = 1:size(pairsToRun(:,1),1)
@@ -86,7 +89,7 @@ act = pairsToRun(pair,2);
   
    %% create temporally smoothed predictor spike trains here
 if pred_last ~= pred
-    for temp = 1:size(spikeTimes,3)
+%     for temp = 1:size(spikeTimes,3)
 %         if temp>win & temp+win<size(spikeTimes,3)
 %             if win == 0 
 %             smoothedTrains(:,temp)= spikeTimes(pred,:,temp);
@@ -102,8 +105,9 @@ if pred_last ~= pred
 %             j = size(spikeTimes,3)-temp;
 %             smoothedTrains(:,temp)=  sum(spikeTimes(pred,:,(temp-win:temp+j))/(length(temp-win:size(spikeTimes,3))),3);
 %         end
-        smoothedTrains(:,temp) = smooth(spikeTimes(pred,:,temp),win);
-    end
+%     end
+        smoothedTrains = circ_smoothTS(squeeze(spikeTimes_pred(pred,:,:)),win,'exclude',0)';
+
 end
          %% Run GLM on individual trials/instances
         randOrder = randperm(numTrials); 
@@ -115,18 +119,18 @@ end
             
 %                                stats(pair,trial)
             [results dev(pair,trial) ] = ...
-            glmfit([predictor;]',actual,'normal');
+            glmfit([cos(predictor); sin(predictor)]',actual,'normal');
 %             yhat(pair,trial,:) = glmval(results,[predictor; 1:size(spikeTimes,3)]','identity');
             if numTrials == 1 % we need another way to shuffle if only one trial is given
-                for iter = 1:10
+                for iter = 1:5
                     predictorControlShifted = circshift(predictorControl,...
                         round(rand*length(predictorControl)),2);
                     [resultsControl(:,iter) devControl(pair,trial,iter)] = ...
-                    glmfit([predictorControlShifted;]',actual,'normal');
+                    glmfit([cos(predictorControlShifted);sin(predictorControlShifted)]',actual,'normal');
                 end
             else
                 [resultsControl devControl(pair,trial)] = ...
-                    glmfit([predictorControl;]',actual,'normal');
+                    glmfit([cos(predictorControlShifted);sin(predictorControlShifted)]',actual,'normal');
             end
             
 %             yhatControl(pair,trial,:) = glmval(results,[predictorControl; 1:size(spikeTimes,3)]','identity');            
