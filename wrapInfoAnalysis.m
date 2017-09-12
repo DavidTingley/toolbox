@@ -99,36 +99,36 @@ for smoothing = 1:round(nBins/2)
             struct.discBins = discBins;
             struct.condition = cond;
             olypherInfo.results{cell} = [olypherInfo.results{cell}; struct2table(struct)];
-            if cell == 80
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                cols = find(olypherInfo.results{cell}.discBins == discBins);
-                rows = intersect(rows,cols);
-                figure(discBins)
-                subplot(4,2,1);
-%                 imagesc(squeeze(firingMaps.rateMaps_disc{cond}(cell,:,:)));
-                imagesc(squeeze(firingMaps.phaseMaps_disc{cond}(cell,:,:)));
-                subplot(4,2,2);
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
-                hold on
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
-                hold off
-                subplot(4,2,4)
-                scatter(firingMaps.phaseMaps{cond}{cell}(:,1),firingMaps.phaseMaps{cond}{cell}(:,end)+2*pi,'.k');
-                subplot(4,2,3);
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows),'r')
-                hold on
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows),'g')
-                hold off
-                subplot(4,2,5)
-                imagesc(olypherInfo.results{cell}.phaseInfoScores)
-                subplot(4,2,6)
-                imagesc(olypherInfo.results{cell}.rateInfoScores)
-                
-                title([cell cond])
-                pause(.1)
-            end
+%             if cell == 80
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 cols = find(olypherInfo.results{cell}.discBins == discBins);
+%                 rows = intersect(rows,cols);
+%                 figure(discBins)
+%                 subplot(4,2,1);
+% %                 imagesc(squeeze(firingMaps.rateMaps_disc{cond}(cell,:,:)));
+%                 imagesc(squeeze(firingMaps.phaseMaps_disc{cond}(cell,:,:)));
+%                 subplot(4,2,2);
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
+%                 hold on
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
+%                 hold off
+%                 subplot(4,2,4)
+%                 scatter(firingMaps.phaseMaps{cond}{cell}(:,1),firingMaps.phaseMaps{cond}{cell}(:,end)+2*pi,'.k');
+%                 subplot(4,2,3);
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows),'r')
+%                 hold on
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows),'g')
+%                 hold off
+%                 subplot(4,2,5)
+%                 imagesc(olypherInfo.results{cell}.phaseInfoScores)
+%                 subplot(4,2,6)
+%                 imagesc(olypherInfo.results{cell}.rateInfoScores)
+%                 
+%                 title([cell cond])
+%                 pause(.1)
+%             end
             
         end
         disp(['done with condition: ' num2str(cond) ' of ' num2str(length(unique(behavior.events.trialConditions)))]);
