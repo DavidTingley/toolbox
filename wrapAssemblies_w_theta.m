@@ -30,6 +30,7 @@ cd% try
     % generate continuous binned spike trains
         for c = 1:length(unique(behavior.events.trialConditions))
             spktrains{c} = [];
+            spk_phase_trains{c} = [];
             phasetrains{c} =[];
             phasetrains_sin{c} = [];
             phasetrains_cos{c} =[];
@@ -42,6 +43,7 @@ cd% try
                   behavior.events.trialIntervals(c,1)));
               
               train = single(zeros(length(spikes.times),trialLength));
+              ptrain = single(zeros(length(spikes.times),trialLength));
 
               for s = 1:length(spikes.times)
                     f = find(spikes.times{s}>behavior.events.trialIntervals(c,1));
@@ -49,9 +51,12 @@ cd% try
                     fff = intersect(f,ff);
                     times = ceil(1000*(spikes.times{s}(fff)-behavior.events.trialIntervals(c,1)));
                     train(s,times) = 1;
+                    ptrain(s,times) = circ_mean(phases(round(spikes.times{s}(fff)*1250)));
               end
               spktrains{behavior.events.trialConditions(c)} = ...
                   [spktrains{behavior.events.trialConditions(c)},train];
+              spk_phase_trains{behavior.events.trialConditions(c)} = ...
+                  [spk_phase_trains{behavior.events.trialConditions(c)},ptrain];
               [a start] =min(abs(lfp.timestamps-behavior.events.trialIntervals(c,1)));
               [a stop] =min(abs(lfp.timestamps-behavior.events.trialIntervals(c,2)));
               p = makeLength(phases(start:stop),length(train));

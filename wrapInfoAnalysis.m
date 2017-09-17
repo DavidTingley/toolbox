@@ -67,7 +67,7 @@ for smoothing = 1:round(nBins/2)
 %            firingMaps.phaseMaps_disc_shuffle{cond}(cell,:,iter,:) = discretize(binnedfiringMaps.phaseMaps_smooth_shuffle{cond}(cell,:,iter,:),-pi:.1:pi);% ,-1:.032:1);
 %            end
         end
-        firingMaps.phaseMaps_disc{cond}(isnan(firingMaps.phaseMaps_disc{cond}))=0;    
+%         firingMaps.phaseMaps_disc{cond}(isnan(firingMaps.phaseMaps_disc{cond}))=0;    
         
         % run info analysis
         [track_info_rate,pos_info_val_rate] = Info_Analysis(firingMaps.rateMaps_disc{cond},1,0);  
@@ -99,7 +99,7 @@ for smoothing = 1:round(nBins/2)
             struct.discBins = discBins;
             struct.condition = cond;
             olypherInfo.results{cell} = [olypherInfo.results{cell}; struct2table(struct)];
-%             if cell == 80
+%             if cell == 44 && cond == 5
 %                 rows = find(olypherInfo.results{cell}.condition==cond);
 %                 cols = find(olypherInfo.results{cell}.discBins == discBins);
 %                 rows = intersect(rows,cols);
@@ -135,7 +135,7 @@ for smoothing = 1:round(nBins/2)
         end
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-    save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
+%     save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
 end
     end
 % end

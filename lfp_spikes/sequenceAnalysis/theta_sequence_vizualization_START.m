@@ -1,8 +1,12 @@
 % used with DT2 27th initially
 % 
 % 
+load('behav.mat')
+load('DT2_rPPC_rCCG_3540um_1288um_20160227_160227_121226.sessionInfo.mat')
+lfp = bz_GetLFP(sessionInfo.thetaChans(2));
+spikes = bz_GetSpikes;
 [b a] = butter(4,[4/625 12/625],'bandpass');
-filt = filtfilt(b,a,lfp(:,3));
+filt = filtfilt(b,a,double(lfp.data));
 for i=1:32
 st = trials{1}{i}(1,5);
 sto = trials{1}{i}(end,5);
@@ -15,8 +19,8 @@ ang = angle(hilbert(filt));
  for i=1:32
 st = trials{1}{i}(1,5);
 sto = trials{1}{i}(end,5);
-for j=1:length(units)
-sp{i}{j}=spikes{j}(intersect(find(spikes{j}>st),find(spikes{j}<sto)))-st;
+for j=1:length(spikes.times)
+sp{i}{j}=spikes.times{j}(intersect(find(spikes.times{j}>st),find(spikes.times{j}<sto)))-st;
 end
 end
 for i=1:32
@@ -73,7 +77,7 @@ for k=1:length(cycles{t})
        cyc = [cyc;cycles_control{t}{k}{i}' repmat(i,length(cycles_control{t}{k}{i}),1)]; 
        ph = [ph;phase_angles{t}{k}{i}'];
     end
-    cyc = cyc(r(1:num),:); % matching number of random spikes from nearby theta cycles (other trials)
+    cyc = cyc(r(1:num),:); % matching number of random spikes.times from nearby theta cycles (other trials)
     ph = ph(r(1:num));
     for i=1:179
         cyc_new{i} = cyc(find(cyc(:,2)==i),1);
@@ -172,7 +176,7 @@ for k=1:length(cycles{t})
        cyc = [cyc;cycles_control{t}{k}{i}' repmat(i,length(cycles_control{t}{k}{i}),1)]; 
        ph = [ph;phase_angles{t}{k}{i}'];
     end
-    cyc = cyc(r(1:num),:); % matching number of random spikes from nearby theta cycles (other trials)
+    cyc = cyc(r(1:num),:); % matching number of random spikes.times from nearby theta cycles (other trials)
     ph = ph(r(1:num));
     for i=1:179
         cyc_new{i} = cyc(find(cyc(:,2)==i),1);
@@ -215,7 +219,7 @@ for k=1:length(cycles{t})
        cyc = [cyc;cycles_control{t}{k}{i}' repmat(i,length(cycles_control{t}{k}{i}),1)]; 
        ph = [ph;phase_angles{t}{k}{i}'];
     end
-    cyc = cyc(r(1:num),:); % matching number of random spikes from nearby theta cycles (other trials)
+    cyc = cyc(r(1:num),:); % matching number of random spikes.times from nearby theta cycles (other trials)
     ph = ph(r(1:num));
     for i=1:179
         cyc_new{i} = cyc(find(cyc(:,2)==i),1);
