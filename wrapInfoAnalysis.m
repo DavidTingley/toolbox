@@ -5,7 +5,12 @@
 xml = LoadParameters;
 % if ~exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
 load([xml.FileName '.firingMaps.cellinfo.mat'])
-load([xml.FileName '.behavior.mat'])
+if exist([xml.FileName '.interpolatedBehav.behavior.mat'])
+    load([xml.FileName '.interpolatedBehav.behavior.mat'])
+    behavior = interpolatedBehav;
+else
+    load([xml.FileName '.behavior.mat'])
+end
 load([xml.FileName '.sessionInfo.mat'])
 load([xml.FileName '.spikes.cellinfo.mat'])
 % lfp = bz_GetLFP(sessionInfo.thetaChans(2));
@@ -135,7 +140,7 @@ for smoothing = 1:round(nBins/2)
         end
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-%     save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
+    save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
 end
     end
 % end
