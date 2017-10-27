@@ -3,7 +3,7 @@
 
 % try
 xml = LoadParameters;
-% if ~exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
+if ~exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
 load([xml.FileName '.firingMaps.cellinfo.mat'])
 if exist([xml.FileName '.interpolatedBehav.behavior.mat'])
     load([xml.FileName '.interpolatedBehav.behavior.mat'])
@@ -145,4 +145,4 @@ end
     end
 % end
 % catch
-% end
+end

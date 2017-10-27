@@ -3,7 +3,12 @@ cd% try
     xml = LoadParameters;
      load([xml.FileName '.behavior.mat'])
     load([xml.FileName '.sessionInfo.mat'])
-    lfp = bz_GetLFP(sessionInfo.thetaChans(end));%,'intervals',[behavior.timestamps(1) behavior.timestamps(end)]);
+    sessionInfo = bz_getSessionInfo;
+    if ~isempty(sessionInfo.ca3)
+            lfp = bz_GetLFP(sessionInfo.ca3);%,'intervals',[behavior.timestamps(1) behavior.timestamps(end)]);
+    else
+            lfp = bz_GetLFP(sessionInfo.ca1);%,'intervals',[behavior.timestamps(1) behavior.timestamps(end)]);
+    end
     [b a] = butter(4,[6/(lfp.samplingRate/2) 10/(lfp.samplingRate/2)],'bandpass');
     phases = angle(hilbert(FiltFiltM(b,a,double(lfp.data(:,1)))));
     
@@ -13,11 +18,11 @@ cd% try
     for i=1:length((spikes.times))
        for j = i:length((spikes.times)) 
           if i ~= j & spikes.shankID(i) ~= spikes.shankID(j)
-              if strcmp(spikes.region{i},'ls') && strcmp(spikes.region{j},'hpc')
+              if strcmp(spikes.region{i},'ls') && strcmp(spikes.region{j},'hpc') || strcmp(spikes.region{j},'ca1') || strcmp(spikes.region{j},'ca3')
                 
                    pairs = [pairs; i j]; 
                    
-              elseif strcmp(spikes.region{i},'hpc') && strcmp(spikes.region{j},'ls')
+              elseif strcmp(spikes.region{i},'hpc')  || strcmp(spikes.region{j},'ca1') || strcmp(spikes.region{j},'ca3') && strcmp(spikes.region{j},'ls')
                    
                     pairs = [pairs; i j]; 
                     

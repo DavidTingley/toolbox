@@ -1,5 +1,5 @@
-function [dev devControl] =... %stats devControl statsControl] = ...
-    cell_assembly_w_theta(spikeTimes,winRange,extraPredictors,pairsToRun)
+function [peerPredictionFits] =... %stats devControl statsControl] = ...
+    cell_assembly_w_theta_crossVal(spikeTimes,winRange,extraPredictors,pairsToRun)
 
 % INPUT
 % 
@@ -66,18 +66,19 @@ c = 1;
 for win = winRange
 %     tic
     %              stats{c}   devControl(c,:,:) statsControl{c}
-       [dev(win+1,:,:) devControl(win+1,:,:)] = ...
+       [peerPredictionFits(c)] = ...
            parGLMRun(win,spikeTimes,extraPredictors,pairsToRun,numTrials);
-%        c = c+1
+       c = c+1
        win
 %        toc
 end
 end
 
 %               stats devControl statsControl
-function [dev devControl] = ...
+function [peerPredictionFits] = ...
     parGLMRun(win,spikeTimes,extraPredictors,pairsToRun,numTrials)
 warning off;
+peerPredictionFits.results = table;
 pred_last = 0;
 for pair = 1:size(pairsToRun(:,1),1)
 %     tic
@@ -106,32 +107,48 @@ if pred_last ~= pred
     end
 end
          %% Run GLM on individual trials/instances
-        randOrder = randperm(numTrials); 
+        actual = [];
+        predictor =[];
         for trial = 1:numTrials
+            actual = [actual;squeeze(double(squeeze(spikeTimes(act,trial,:))))]; % GLM's don't like singles...?
+            predictor = [predictor;squeeze(double(smoothedTrains(trial,:)))];
+        end
+        struct.tau = win;
+        
+        for iteration = 1:10
+            % 60/40 split here
+            r = randperm(length(actual));
 
-            actual = double(squeeze(spikeTimes(act,trial,:))); % GLM's don't like singles...?
-            predictor = double(smoothedTrains(trial,:));
-            predictorControl = double(smoothedTrains(randOrder(trial),:));
-            
-%                                stats(pair,trial)
-            [results dev(pair,trial) ] = ...
-            glmfit([predictor;extraPredictors]',actual,'normal');
-%             yhat(pair,trial,:) = glmval(results,[predictor; 1:size(spikeTimes,3)]','identity');
+            actual_test = actual(r(prctile(1:length(actual),60):end));
+            predictor_test = predictor(r(prctile(1:length(actual),60):end));
+            actual_train = actual(r(1:prctile(1:length(actual),60)));
+            predictor_train = predictor(r(1:prctile(1:length(actual),60)));
+            extraPredictors_test = extraPredictors(:,r(prctile(1:length(actual),60):end));
+            extraPredictors_train = extraPredictors(:,r(1:prctile(1:length(actual),60)));
 
-            if numTrials == 1 % we need another way to shuffle if only one trial is given
-                for iter = 1:5
-                    predictorControlShifted = circshift(predictorControl,...
-                        round(rand*length(predictorControl)),2);
-                    [resultsControl(:,iter) devControl(pair,trial,iter)] = ...
-                    glmfit([predictorControlShifted;extraPredictors]',actual,'normal');
-                end
-            else
-                [resultsControl devControl(pair,trial)] = ...
-                    glmfit([predictorControl;extraPredictors]',actual,'normal');
-            end
+
+            [results dev ] = ...
+            glmfit([predictor_train;extraPredictors_train]',actual_train,'normal');
+            yhat = glmval(results,[predictor_test;extraPredictors_test]','identity');
+
+            rr = randperm(length(actual_train));
+            rrr = randperm(length(actual_test));
+            [results_shuffle dev_shuffle ] = ...
+            glmfit([predictor_train;extraPredictors_train]',actual_train(rr),'normal');
+            yhat_shuffle = glmval(results,[predictor_test(rrr);extraPredictors_test(:,rrr)]','identity');
             
-%             yhatControl(pair,trial,:) = glmval(results,[predictorControl; 1:size(spikeTimes,3)]','identity');            
-        end   
+            struct.dev = dev;
+            struct.dev_shuffle = dev_shuffle;
+            struct.iteration=iteration;
+            fits = cell2struct({yhat,actual_test,yhat_shuffle,extraPredictors_test(4,:)'},{'yfit','rate','yfit_shuffle','position'},2);
+            struct.fits = fits;
+            struct.pair = pair;
+            struct.ls = pairsToRun(pair,1);
+            struct.hpc = pairsToRun(pair,2);
+            peerPredictionFits.results = [peerPredictionFits.results;struct2table(struct)];
+        end
+            
+         
      pred_last = pred;
 %      toc
  end
