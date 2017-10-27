@@ -1,4 +1,4 @@
-cd% try
+% try
     % load spikes and stuff
     xml = LoadParameters;
      load([xml.FileName '.behavior.mat'])
