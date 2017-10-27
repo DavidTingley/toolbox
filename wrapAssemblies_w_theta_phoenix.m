@@ -83,7 +83,7 @@ function [] = wrapAssemblies_w_theta_phoenix(COND)% try
         for c = COND%length(unique(behavior.events.trialConditions)):-1:1
             extraPredictors = [phasetrains_sin{c};phasetrains_cos{c};phasetrains{c};coords{c};velocities{c}];
 %             [peerPredictionFits] =cell_assembly_w_theta_crossVal((spktrains{c}),40,extraPredictors,pairs);
-            [dev{c} devControl{c}] =cell_assembly_w_theta((spktrains{c}),40,extraPredictors,pairs);
+            [dev{c} devControl{c}] =cell_assembly_w_theta((spktrains{c}),0:200,extraPredictors,pairs);
 %             save(['/ifs/data/buzsakilab/results/' spikes.sessionName '_w_positionFits_condition_'  num2str(COND) '.mat'],'peerPredictionFits','-v7.3');
             save(['/ifs/data/buzsakilab/results/' spikes.sessionName '_condition_'  num2str(COND) '.mat'],'spktrains','phasetrains','coords','velo*','pairs','dev*','-v7.3');
         end
