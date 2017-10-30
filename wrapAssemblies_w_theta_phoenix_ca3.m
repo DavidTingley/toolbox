@@ -18,11 +18,11 @@ function [] = wrapAssemblies_w_theta_phoenix(COND)% try
     for i=1:length((spikes.times))
        for j = i:length((spikes.times)) 
           if i ~= j & spikes.shankID(i) ~= spikes.shankID(j)
-              if strcmp(spikes.region{i},'ls') && strcmp(spikes.region{j},'hpc')
+              if strcmp(spikes.region{i},'ls') && strcmp(spikes.region{j},'hpc') || strcmp(spikes.region{j},'ca3') || strcmp(spikes.region{j},'ca1')
                 
                    pairs = [pairs; i j]; 
                    
-              elseif strcmp(spikes.region{i},'hpc') && strcmp(spikes.region{j},'ls')
+              elseif strcmp(spikes.region{i},'hpc')  || strcmp(spikes.region{j},'ca3') || strcmp(spikes.region{j},'ca1') && strcmp(spikes.region{j},'ls')
                    
                     pairs = [pairs; i j]; 
                     
