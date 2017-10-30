@@ -1,5 +1,7 @@
 function [] = wrapAssemblies_w_theta_phoenix(COND)% try
     % load spikes and stuff
+    spikes = bz_GetSpikes;
+    if ~exist(['/ifs/data/buzsakilab/results/' spikes.sessionName '_condition_'  num2str(COND) '.mat'])
     xml = LoadParameters;
      load([xml.FileName '.behavior.mat'])
     load([xml.FileName '.sessionInfo.mat'])
@@ -12,7 +14,7 @@ function [] = wrapAssemblies_w_theta_phoenix(COND)% try
     [b a] = butter(4,[6/(lfp.samplingRate/2) 10/(lfp.samplingRate/2)],'bandpass');
     phases = angle(hilbert(FiltFiltM(b,a,double(lfp.data(:,1)))));
     
-    spikes = bz_GetSpikes;
+    
     
     pairs =[];
     for i=1:length((spikes.times))
@@ -30,7 +32,7 @@ function [] = wrapAssemblies_w_theta_phoenix(COND)% try
           end
        end
     end
-     if ~exist(['/ifs/data/buzsakilab/results/' spikes.sessionName '_condition_'  num2str(COND) '.mat'])
+     
     % generate continuous binned spike trains
         for c = 1:length(unique(behavior.events.trialConditions))
             spktrains{c} = [];
