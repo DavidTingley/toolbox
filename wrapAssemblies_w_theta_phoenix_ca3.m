@@ -5,10 +5,10 @@ function [] = wrapAssemblies_w_theta_phoenix(COND)% try
     xml = LoadParameters;
      load([xml.FileName '.behavior.mat'])
     load([xml.FileName '.sessionInfo.mat'])
-    if ~isempty(sessionInfo.ca3)
-            lfp = bz_GetLFP(sessionInfo.ca3);%,'intervals',[behavior.timestamps(1) behavior.timestamps(end)]);
-    else
+    if ~isempty(sessionInfo.ca1)
             lfp = bz_GetLFP(sessionInfo.ca1);%,'intervals',[behavior.timestamps(1) behavior.timestamps(end)]);
+    else
+            lfp = bz_GetLFP(sessionInfo.ca3);%,'intervals',[behavior.timestamps(1) behavior.timestamps(end)]);
     end
     
     [b a] = butter(4,[6/(lfp.samplingRate/2) 10/(lfp.samplingRate/2)],'bandpass');
