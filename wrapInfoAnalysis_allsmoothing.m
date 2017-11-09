@@ -3,7 +3,7 @@
 
 % try
 xml = LoadParameters;
-if ~exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
+if ~exist([xml.FileName '.olypherInfo_allSmoothing.cellinfo.mat'])
 load([xml.FileName '.firingMaps.cellinfo.mat'])
 load([xml.FileName '.phaseMaps.cellinfo.mat'])
 if exist([xml.FileName '.interpolatedBehav.behavior.mat'])
