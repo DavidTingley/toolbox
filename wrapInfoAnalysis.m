@@ -3,14 +3,10 @@
 
 % try
 xml = LoadParameters;
-if ~exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
+% if ~exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
 load([xml.FileName '.firingMaps.cellinfo.mat'])
-if exist([xml.FileName '.interpolatedBehav.behavior.mat'])
-    load([xml.FileName '.interpolatedBehav.behavior.mat'])
-    behavior = interpolatedBehav;
-else
-    load([xml.FileName '.behavior.mat'])
-end
+
+load([xml.FileName '.behavior.mat'])
 load([xml.FileName '.sessionInfo.mat'])
 load([xml.FileName '.spikes.cellinfo.mat'])
 % lfp = bz_GetLFP(sessionInfo.thetaChans(2));
@@ -27,8 +23,8 @@ end
 %    % set up phase coding data
 % [firingMaps.rateMaps firingMaps.countMaps occuMap firingMaps.phaseMaps] = bz_firingMap1D(spikes.times,behavior,lfp,4);
 [binnedfiringMaps.phaseMaps] = bz_phaseMap2Bins(firingMaps.phaseMaps,firingMaps.rateMaps,behavior);
-    for discBins = [1:8 10 15 40 60 100]
-for smoothing = 1:round(nBins/2)
+    for discBins = [5]%1:8 10 15 40 60 100]
+for smoothing = [1 5 10 20 40 80]%1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
     for cond = 1:length(unique(behavior.events.trialConditions))
 %         figure(cond)
@@ -140,9 +136,9 @@ for smoothing = 1:round(nBins/2)
         end
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-    save([xml.FileName '.olypherInfo.cellinfo.mat'],'olypherInfo')
+    save([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'],'olypherInfo')
 end
     end
 % end
 % catch
-end
+% end
