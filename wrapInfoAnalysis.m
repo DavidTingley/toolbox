@@ -3,7 +3,7 @@
 
 % try
 xml = LoadParameters;
-if exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
+% if exist([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'])
 load([xml.FileName '.firingMaps.cellinfo.mat'])
 load([xml.FileName '.phaseMaps.cellinfo.mat'])
 load([xml.FileName '.behavior.mat'])
@@ -23,14 +23,14 @@ end
 %    % set up phase coding data
 % [firingMaps.rateMaps firingMaps.countMaps occuMap firingMaps.phaseMaps] = bz_firingMap1D(spikes.times,behavior,lfp,4);
 [binnedfiringMaps.phaseMaps] = bz_phaseMap2Bins(phaseMaps.phaseMaps,firingMaps.rateMaps,behavior);
-    for discBins = [5]%1:8 10 15 40 60 100]
+    for discBins = [1:4]%1:8 10 15 40 60 100]
 for smoothing = [1:10 20 50]%1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
-    for cond = 5%1:length(unique(behavior.events.trialConditions))
+    for cond = 1:length(unique(behavior.events.trialConditions))
 %         figure(cond)
         % smooth data..
         if sum(behavior.events.trialConditions==cond)>2
-        for cell = 80%1:length(spikes.times)
+        for cell = 1:length(spikes.times)
            for trial = 1:size(binnedfiringMaps.phaseMaps{cond},2)
               binnedfiringMaps.phaseMaps_smooth{cond}(cell,trial,:) = circ_smoothTS(squeeze(binnedfiringMaps.phaseMaps{cond}(cell,trial,:)),smoothing,'method','mean','exclude',0); 
               binnedfiringMaps.phaseMaps_smooth{cond}(cell,trial,binnedfiringMaps.phaseMaps_smooth{cond}(cell,trial,:)==0)=nan;
@@ -81,7 +81,7 @@ for smoothing = [1:10 20 50]%1:round(nBins/2)
 %         end
         
         % compile data
-        for cell = 80%1:length(spikes.times)
+        for cell = 1:length(spikes.times)
             struct.phaseInfoScores = squeeze(sum(pos_info_val_phase(cell,:,:)))';
             struct.phaseTotalInfo = sum(squeeze(sum(pos_info_val_phase(cell,:,:))));
             struct.phasePeakInfo = max(squeeze(sum(pos_info_val_phase(cell,:,:))));
@@ -100,44 +100,44 @@ for smoothing = [1:10 20 50]%1:round(nBins/2)
             struct.discBins = discBins;
             struct.condition = cond;
             olypherInfo.results{cell} = [olypherInfo.results{cell}; struct2table(struct)];
-            if cell == 80 && cond == 5
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                cols = find(olypherInfo.results{cell}.discBins == discBins);
-                rows = intersect(rows,cols);
-                figure(discBins)
-                subplot(4,2,1);
-%                 imagesc(squeeze(firingMaps.rateMaps_disc{cond}(cell,:,:)));
-                imagesc(squeeze(firingMaps.phaseMaps_disc{cond}(cell,:,:)));
-                subplot(4,2,2);
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
-                hold on
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
-                hold off
-                subplot(4,2,4)
-                scatter(phaseMaps.phaseMaps{cond}{cell}(:,1),phaseMaps.phaseMaps{cond}{cell}(:,end)+2*pi,'.k');
-                subplot(4,2,3);
-                rows = find(olypherInfo.results{cell}.condition==cond);
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows),'r')
-                hold on
-                plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows),'g')
-                hold off
-                subplot(4,2,5)
-                imagesc(olypherInfo.results{cell}.phaseInfoScores)
-                subplot(4,2,6)
-                imagesc(olypherInfo.results{cell}.rateInfoScores)
-                
-                title([cell cond])
-                pause(.1)
-            end
+%             if cell == 80 && cond == 5
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 cols = find(olypherInfo.results{cell}.discBins == discBins);
+%                 rows = intersect(rows,cols);
+%                 figure(discBins)
+%                 subplot(4,2,1);
+% %                 imagesc(squeeze(firingMaps.rateMaps_disc{cond}(cell,:,:)));
+%                 imagesc(squeeze(firingMaps.phaseMaps_disc{cond}(cell,:,:)));
+%                 subplot(4,2,2);
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.rateTotalInfo(rows),'r')
+%                 hold on
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phaseTotalInfo(rows),'g')
+%                 hold off
+%                 subplot(4,2,4)
+%                 scatter(phaseMaps.phaseMaps{cond}{cell}(:,1),phaseMaps.phaseMaps{cond}{cell}(:,end)+2*pi,'.k');
+%                 subplot(4,2,3);
+%                 rows = find(olypherInfo.results{cell}.condition==cond);
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows),'r')
+%                 hold on
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows),'g')
+%                 hold off
+%                 subplot(4,2,5)
+%                 imagesc(olypherInfo.results{cell}.phaseInfoScores)
+%                 subplot(4,2,6)
+%                 imagesc(olypherInfo.results{cell}.rateInfoScores)
+%                 
+%                 title([cell cond])
+%                 pause(.1)
+%             end
             
         end
         disp(['done with condition: ' num2str(cond) ' of ' num2str(length(unique(behavior.events.trialConditions)))]);
         end
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-%     save([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'],'olypherInfo')
-end
+    save([xml.FileName '.olypherInfo_w_disc.cellinfo.mat'],'olypherInfo')
+% end
     end
 % end
 % catch
