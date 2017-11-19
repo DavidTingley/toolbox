@@ -23,9 +23,11 @@ end
 %    % set up phase coding data
 % [firingMaps.rateMaps firingMaps.countMaps occuMap firingMaps.phaseMaps] = bz_firingMap1D(spikes.times,behavior,lfp,4);
 [binnedfiringMaps.phaseMaps] = bz_phaseMap2Bins(phaseMaps.phaseMaps,firingMaps.rateMaps,behavior);
-    for discBins = [1:4]%1:8 10 15 40 60 100]
-for smoothing = [1:10 20 50]%1:round(nBins/2)
+    for discBins = [2]%1:8 10 15 40 60 100]
+for smoothing = [1:50]%1:round(nBins/2)
     disp(['smoothing by: ' num2str(smoothing) ' bins']);
+%     [firingMaps] = bz_firingMap1D(spikes,behavior,smoothing);
+%     firingMaps.rateMaps_smooth = firingMaps.rateMaps_box;
     for cond = 1:length(unique(behavior.events.trialConditions))
 %         figure(cond)
         % smooth data..
@@ -68,7 +70,8 @@ for smoothing = [1:10 20 50]%1:round(nBins/2)
 %            firingMaps.phaseMaps_disc_shuffle{cond}(cell,:,iter,:) = discretize(binnedfiringMaps.phaseMaps_smooth_shuffle{cond}(cell,:,iter,:),-pi:.1:pi);% ,-1:.032:1);
 %            end
         end
-%         firingMaps.phaseMaps_disc{cond}(isnan(firingMaps.phaseMaps_disc{cond}))=0;    
+        firingMaps.phaseMaps_disc{cond}(isnan(firingMaps.phaseMaps_disc{cond}))=0;    
+        firingMaps.rateMaps_disc{cond}(isnan(firingMaps.rateMaps_disc{cond}))=0;   
         
         % run info analysis
         [track_info_rate,pos_info_val_rate] = Info_Analysis(firingMaps.rateMaps_disc{cond},1,0);  
@@ -104,7 +107,8 @@ for smoothing = [1:10 20 50]%1:round(nBins/2)
 %                 rows = find(olypherInfo.results{cell}.condition==cond);
 %                 cols = find(olypherInfo.results{cell}.discBins == discBins);
 %                 rows = intersect(rows,cols);
-%                 figure(discBins)
+%                 figure(discBins+1)
+%                 nTrials = size(firingMaps.rateMaps{cond},2);
 %                 subplot(4,2,1);
 % %                 imagesc(squeeze(firingMaps.rateMaps_disc{cond}(cell,:,:)));
 %                 imagesc(squeeze(firingMaps.phaseMaps_disc{cond}(cell,:,:)));
@@ -118,15 +122,16 @@ for smoothing = [1:10 20 50]%1:round(nBins/2)
 %                 scatter(phaseMaps.phaseMaps{cond}{cell}(:,1),phaseMaps.phaseMaps{cond}{cell}(:,end)+2*pi,'.k');
 %                 subplot(4,2,3);
 %                 rows = find(olypherInfo.results{cell}.condition==cond);
-%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows),'r')
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.ratePeakInfo(rows)./nTrials,'r')
 %                 hold on
-%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows),'g')
+%                 plot(olypherInfo.results{cell}.smoothing(rows),olypherInfo.results{cell}.phasePeakInfo(rows)./nTrials,'g')
 %                 hold off
 %                 subplot(4,2,5)
 %                 imagesc(olypherInfo.results{cell}.phaseInfoScores)
 %                 subplot(4,2,6)
 %                 imagesc(olypherInfo.results{cell}.rateInfoScores)
-%                 
+%                 subplot(4,2,7)
+%                 imagesc(squeeze(firingMaps.rateMaps_disc{cond}(cell,:,:)))
 %                 title([cell cond])
 %                 pause(.1)
 %             end
