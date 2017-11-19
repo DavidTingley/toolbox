@@ -1,7 +1,7 @@
 
 
 
-% try
+try
 xml = LoadParameters;
 if ~exist([xml.FileName '.olypherInfo_allSmoothing.cellinfo.mat'])
 load([xml.FileName '.firingMaps.cellinfo.mat'])
@@ -141,9 +141,10 @@ for smoothing = [1:50]%1:round(nBins/2)
         end
     end
     olypherInfo.dateRun = date;  % this can take a very long time so lets save each loop...
-    save([xml.FileName '.olypherInfo_allSmoothing.cellinfo.mat'],'olypherInfo')
+    save([xml.FileName '.olypherInfo_allSmoothing.cellinfo.mat'],'olypherInfo','-v7.3')
 end
     end
-% end
-% catch
+end
+catch
+
 end
