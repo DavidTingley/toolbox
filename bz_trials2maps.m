@@ -27,7 +27,7 @@ for tt = 1:length(trials)
         end
     t_conc_all(t,:,:) = t_conc;
     else
-        while length(t_conc)>8+1
+        while length(t_conc)>201
         di = pdist(t_conc);
         s = squareform(di);
         s(find(eye(size(s))))=nan;

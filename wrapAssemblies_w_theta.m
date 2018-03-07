@@ -100,7 +100,7 @@
             for i=1:length(pairs)
                f = find(sum(ismember(pairs_all,pairs(1,:))')==2);
                pairs_all(f,:) = [];
-            end
+               end2
             pairs = pairs_all;
             for c = 1:length(unique(behavior.events.trialConditions))
             spktrains{c} = [];

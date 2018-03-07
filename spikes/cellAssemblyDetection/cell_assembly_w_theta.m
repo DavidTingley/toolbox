@@ -1,8 +1,6 @@
-function [dev devControl] =... %stats devControl statsControl] = ...
-    cell_assembly_w_theta(spikeTimes,winRange,extraPredictors,pairsToRun)
-
+function [dev devControl] =...
+    bz_peerPrediction(spikeTimes,winRange,extraPredictors,pairsToRun)
 % INPUT
-% 
 % 
 %     spikeTimes - (M x N x D) matrix of spike times. M is the cell number, 
 %                  N is the trial number, and D is length of a trial in
@@ -10,9 +8,11 @@ function [dev devControl] =... %stats devControl statsControl] = ...
 %     winRange - vector that represents the range of temporal smoothing 
 %                 windows over which to run the assembly analysis 
 %                 (default is 0:500 ms)
+%     extraPredictors - M x D matrix of variables to regress out (i.e.
+%                       position, velocity, theta phase)
 %     pairsToRun - (P x 2) matrix of cell pairs that will be analyzed 
 %                  (default analyzes all cell pairs within spikeTimes matrix)
-
+%
 % OUTPUT
 %      dev - (W x M x N) matrix of deviance from solution vectors for each 
 %              cell for each trial at each temporally smoothed window size
@@ -20,6 +20,7 @@ function [dev devControl] =... %stats devControl statsControl] = ...
 %                temporally smoothed window size
 %      *Control - same variables as above with trial order randomly shuffled
 
+% david tingley 2015
 
 
 
