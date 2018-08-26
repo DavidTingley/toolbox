@@ -34,7 +34,9 @@ if size(pos,2) > 6
                 behavior.rotationType = 'quaternion';
                 behavior.events.trials{i}.timestamps = pos(start:stop,1);
                 
-
+            if stop-start > 10000
+               error 
+            end
             trials{behavior.events.trialConditions(i)}{c(behavior.events.trialConditions(i))} = pos(start:stop,:);
   
             c(behavior.events.trialConditions(i)) = 1+c(behavior.events.trialConditions(i));

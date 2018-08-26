@@ -70,7 +70,7 @@ for win = winRange
        [dev(win+1,:,:) devControl(win+1,:,:)] = ...
            parGLMRun(win,spikeTimes,extraPredictors,pairsToRun,numTrials);
 %        c = c+1
-       win
+%        win
 %        toc
 end
 end
@@ -135,6 +135,9 @@ end
         end   
      pred_last = pred;
 %      toc
- end
+else
+    dev(pair) = nan;
+    devControl(pair,1,:) = nan(1,5);
+end
 end
 end

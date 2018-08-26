@@ -87,22 +87,22 @@ act = pairsToRun(pair,2);
    %% create temporally smoothed predictor spike trains here
 if pred_last ~= pred
     for temp = 1:size(spikeTimes,3)
-%         if temp>win & temp+win<size(spikeTimes,3)
-%             if win == 0 
-%             smoothedTrains(:,temp)= spikeTimes(pred,:,temp);
-%             elseif win > 0
-%             smoothedTrains(:,temp)=  sum(spikeTimes(pred,:,(temp-win:temp+win))/(win*2),3);
-%             end
-%         end
-%         if temp<=win
-%             j = temp-1;
-%             smoothedTrains(:,temp)=  sum(spikeTimes(pred,:,(temp-j:temp+win))/(length(1:temp+win)),3);
-%         end
-%         if temp+win>=size(spikeTimes,3)
-%             j = size(spikeTimes,3)-temp;
-%             smoothedTrains(:,temp)=  sum(spikeTimes(pred,:,(temp-win:temp+j))/(length(temp-win:size(spikeTimes,3))),3);
-%         end
-        smoothedTrains(:,temp) = smooth(spikeTimes(pred,:,temp),win);
+        if temp>win & temp+win<size(spikeTimes,3)
+            if win == 0 
+            smoothedTrains(:,temp)= spikeTimes(pred,:,temp);
+            elseif win > 0
+            smoothedTrains(:,temp)=  sum(spikeTimes(pred,:,(temp-win:temp+win))/(win*2),3);
+            end
+        end
+        if temp<=win
+            j = temp-1;
+            smoothedTrains(:,temp)=  sum(spikeTimes(pred,:,(temp-j:temp+win))/(length(1:temp+win)),3);
+        end
+        if temp+win>=size(spikeTimes,3)
+            j = size(spikeTimes,3)-temp;
+            smoothedTrains(:,temp)=  sum(spikeTimes(pred,:,(temp-win:temp+j))/(length(temp-win:size(spikeTimes,3))),3);
+        end
+%         smoothedTrains(:,temp) = smooth(spikeTimes(pred,:,temp),win);
     end
 end
          %% Run GLM on individual trials/instances
