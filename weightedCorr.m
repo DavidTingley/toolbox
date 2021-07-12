@@ -2,7 +2,7 @@ function [wCorr] = weightedCorr(mat)
 
 
 
-    wCorr = sum(sum(weightedCov(mat))./ sqrt(weightedVar(mat,1) * weightedVar(mat,2)));
+    wCorr = sum(sum(weightedCov(mat))./ sqrt(weightedVar(mat,1) * weightedVar(mat,2))));
 
 % weighted mean
 function [wM] = wMean(mat)
@@ -20,11 +20,11 @@ function [wCov] = weightedCov(mat)
     wM_y = wMean(mat');
     
     for i=1:size(mat,1)
-        for j=1:size(mat,2)scr
-            wCov(i,j) = mat(i,j) .* ((i - wM_x) .* (j - wM_y)) ./ sum(mat(:));
+        for j=1:size(mat,2)
+            wCov(i,j) = mat(i,j) .* ((i - wM_x) .* (j - wM_y));
         end
     end
-    wCov = sum(wCov(:));
+    wCov = sum(wCov(:)) ./ sum(mat(:));
 return
 
 function [wVar] = weightedVar(mat,axis)
