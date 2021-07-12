@@ -104,6 +104,10 @@ switch graph_type
         for j = 1:no_views
             A{j}=make_graph(views{j},'epsilonBall',round(size(views{1},1)*.1));
         end
+    case 'corr'
+        for j=1:no_views
+           A{j} = corr(views{j},'rows','complete'); 
+        end
 end
 
 for j = 1:no_views
