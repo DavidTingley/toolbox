@@ -8,12 +8,13 @@ function [W]=make_graph(data,graph_type,param)
 
 [num_points,num_features]=size(data);
 
-data_distances=squareform(pdist(data,@naneucdist));
-data_distances_squared=data_distances.^2;
+
 
 
 switch graph_type
     case 'knn'
+        data_distances=squareform(pdist(data,@naneucdist));
+        data_distances_squared=data_distances.^2;
         A=zeros(num_points);
         k=param;
         for example=1:num_points
@@ -27,6 +28,8 @@ switch graph_type
         W=A;
         
     case 'gaussianKernel'
+        data_distances=squareform(pdist(data,@naneucdist));
+        data_distances_squared=data_distances.^2;
         if nargin < 3
             param = nanmean(nanmean(sqrt(data_distances_squared)));
         end
@@ -35,6 +38,8 @@ switch graph_type
         W=gaussianKernel-eye(num_points);
         
     case 'epsilonBall'
+        data_distances=squareform(pdist(data,@naneucdist));
+        data_distances_squared=data_distances.^2;
         A=zeros(num_points);
         epsilon=param;
         for example=1:num_points
@@ -53,6 +58,9 @@ switch graph_type
         for i=1:num_points
             for j=1:num_points
                 A(i,j) = getCosineSimilarity(data(:,i),data(:,j));
+                if isnan(A(i,j))
+                    disp
+                end
             end
         end
         W=A;
