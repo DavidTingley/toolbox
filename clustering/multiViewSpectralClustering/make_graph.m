@@ -47,4 +47,14 @@ switch graph_type
             end
         end
         W=A;
+        
+    case 'cosine'
+        A=zeros(num_points);
+        for i=1:num_points
+            for j=1:num_points
+                A(i,j) = getCosineSimilarity(data(:,i),data(:,j));
+            end
+        end
+        W=A;
+        
 end

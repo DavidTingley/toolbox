@@ -7,7 +7,7 @@ function [clusters,order] = MV_spec(views,numclusts,graph_type,comb_type,clust_a
 %
 % numclusts - Number of clusters (k-value) used when clustering
 %
-% graph_type - ('knn','gaussian','epsilon') Variable determines how 
+% graph_type - ('knn','gaussian','epsilon','cosine','corr') Variable determines how 
 %              similarity graphs of each view are constructed.
 %
 % comb_type - ('sgt','ctn_comb','ctn_late') Variable determines how similarity graphs of each view are
@@ -98,13 +98,22 @@ switch graph_type
             A{j}=make_graph(views{j},'gaussianKernel');
         end
         
+    case 'cosine'
+        % cosine
+        disp('Using a cosine similarity to make similarity graphs...')
+        for j = 1:no_views
+            A{j}=make_graph(views{j},'cosine');
+        end
+        
     case 'epsilon'
         % epsilon needs to be developed
         disp('Using an epsilon ball to make similarity graphs...')
         for j = 1:no_views
             A{j}=make_graph(views{j},'epsilonBall',round(size(views{1},1)*.1));
         end
+        
     case 'corr'
+        disp('Using correlation to make similarity graphs...')
         for j=1:no_views
            A{j} = corr(views{j},'rows','complete'); 
         end
