@@ -57,7 +57,7 @@ switch graph_type
         A=zeros(num_points);
         for i=1:num_points
             for j=1:num_points
-                A(i,j) = getCosineSimilarity(data(:,i),data(:,j));
+                A(i,j) = getCosineSimilarity(data(i,:),data(j,:));
                 if isnan(A(i,j))
                     disp
                 end
